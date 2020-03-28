@@ -1,26 +1,39 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import LoginComponent from './LoginComponent.js'
+import WelcomPage from './WelcomPage.js'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  state = {
+    session: false
+  }
+  componentDidMount(){
+    this.checkSession();
+  }
+  
+  render() {
+    if (this.state.session) {
+      return (<WelcomPage logout={this.logout.bind(this)} />);
+    }
+    else {
+      return (<LoginComponent doneLogin={this.doneLogin.bind(this)} />);
+    }
+  }
+  doneLogin() {
+    this.setState({ session: true });
+  }
+
+  logout() {
+    this.setState({ session: false });
+  }
+
+  checkSession() {
+      fetch("http://localhost:8080/user/session")
+        .then(res => res.json())
+        .then(response => {
+          console.log(response);
+          this.setState({ session: response.isSession });
+        })
+    return this.state.session;
+  }
 }
-
 export default App;
